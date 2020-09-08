@@ -26,6 +26,7 @@ interface DocumentPanelProps {
   markers: any
   menuItemGroups: MenuItemGroup[]
   onChange: (patches: any[]) => void
+  onScrollTopChange: (number) => void
   onCloseView: () => void
   onCollapse?: () => void
   onExpand?: () => void
@@ -45,7 +46,7 @@ export function DocumentPanel(props: DocumentPanelProps) {
   const features = useDeskToolFeatures()
   const portalContainerRef = useRef<HTMLDivElement | null>(null)
   const portalRef = useRef(document.createElement('div'))
-  const {displayed, historyController, open: openHistory} = useDocumentHistory()
+  const {timeline, displayed, historyController, open: openHistory} = useDocumentHistory()
   const {toggleInspect, isHistoryOpen} = props
   const formRef = useRef<any>()
   const activeView = props.views.find(view => view.id === props.activeViewId) ||
@@ -98,6 +99,13 @@ export function DocumentPanel(props: DocumentPanelProps) {
     [formRef.current]
   )
 
+  const handleScroll = useCallback(
+    (event: React.UIEvent) => {
+      props.onScrollTopChange(event.currentTarget.scrollTop)
+    },
+    [props.onScrollTopChange]
+  )
+
   useEffect(() => {
     if (portalContainerRef.current) {
       portalContainerRef.current.appendChild(portalRef.current)
@@ -148,13 +156,14 @@ export function DocumentPanel(props: DocumentPanelProps) {
 
       <PortalProvider element={portalRef.current}>
         <div className={styles.documentViewerContainer}>
-          <div className={styles.documentScroller}>
+          <div className={styles.documentScroller} onScroll={handleScroll}>
             {activeView.type === 'form' && (
               <FormView
                 id={props.documentId}
                 initialFocusPath={props.initialFocusPath}
                 initialValue={props.initialValue}
                 markers={props.markers}
+                diff={timeline.currentDiff()}
                 onChange={props.onChange}
                 readOnly={revTime !== null}
                 ref={formRef}

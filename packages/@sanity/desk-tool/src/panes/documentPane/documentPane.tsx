@@ -15,9 +15,11 @@ import {InspectDialog} from './inspectDialog'
 import {DocumentActionShortcuts, isInspectHotkey, isPreviewHotkey} from './keyboardShortcuts'
 import {DocumentStatusBar} from './statusBar'
 import {Timeline, sinceTimelineProps, revTimelineProps} from './timeline'
+import {Tracker} from '@sanity/base/lib/change-indicators'
 import {Doc, DocumentViewType, MenuItemGroup} from './types'
 
 import styles from './documentPane.css'
+import {ConnectorsOverlay} from './ConnectorsOverlay'
 
 interface DocumentPaneProps {
   connectionState: 'connecting' | 'connected' | 'reconnecting'
@@ -67,6 +69,8 @@ export function DocumentPane(props: DocumentPaneProps) {
   const {setRange, timeline, historyController} = useDocumentHistory()
   const historyState = historyController.selectionState
   const [showValidationTooltip, setShowValidationTooltip] = useState<boolean>(false)
+  const [documentPanelScrollTop, setDocumentPanelScrollTop] = useState(0)
+  const [changePanelScrollTop, setChangePanelScrollTop] = useState(0)
   const paneRouter = usePaneRouter()
   const [timelineMode, setTimelineMode] = useState<'since' | 'rev' | 'closed'>('closed')
   const activeViewId = paneRouter.params.view || (views[0] && views[0].id)
@@ -212,7 +216,14 @@ export function DocumentPane(props: DocumentPaneProps) {
           isSelected ? styles.isActive : styles.isDisabled
         ])}
       >
-        <div className={styles.documentAndChangesContainer}>
+        <Tracker
+          component={ConnectorsOverlay}
+          componentProps={{
+            className: styles.documentAndChangesContainer,
+            documentPanelScrollTop,
+            changePanelScrollTop
+          }}
+        >
           <div className={styles.documentContainer}>
             {isInspectOpen && <InspectDialog value={value} onClose={handleInspectClose} />}
 
@@ -244,6 +255,7 @@ export function DocumentPane(props: DocumentPaneProps) {
               value={value}
               versionSelectRef={versionSelectRef}
               views={views}
+              onScrollTopChange={setDocumentPanelScrollTop}
             />
           </div>
 
@@ -253,6 +265,7 @@ export function DocumentPane(props: DocumentPaneProps) {
                 changesSinceSelectRef={changesSinceSelectRef}
                 documentId={documentId}
                 isTimelineOpen={isTimelineOpen}
+                onScrollTopChange={setChangePanelScrollTop}
                 loading={historyState === 'loading'}
                 onTimelineOpen={handleTimelineSince}
                 schemaType={schemaType}
@@ -261,7 +274,7 @@ export function DocumentPane(props: DocumentPaneProps) {
               />
             </div>
           )}
-        </div>
+        </Tracker>
 
         <div className={styles.footerContainer}>
           <DocumentStatusBar

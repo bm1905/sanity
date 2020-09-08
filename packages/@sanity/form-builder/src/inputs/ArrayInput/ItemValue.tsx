@@ -23,6 +23,7 @@ import {Marker, Type} from '../../typedefs'
 import ConfirmButton from './ConfirmButton'
 import styles from './styles/ItemValue.css'
 import {ArrayType, ItemValue} from './typedefs'
+import {ArrayDiff} from '@sanity/diff'
 
 const DragHandle = createDragHandle(() => (
   <span className={styles.dragHandle}>
@@ -60,6 +61,7 @@ type Props = {
   readOnly: boolean | null
   focusPath: Path
   presence: FormFieldPresence[]
+  diff?: ArrayDiff<any>
 }
 function pathSegmentFrom(value) {
   return {_key: value._key}

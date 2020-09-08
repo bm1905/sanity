@@ -5,6 +5,7 @@ import {Marker, Type} from '../typedefs'
 import {Path} from '../typedefs/path'
 import SanityFormBuilderContext from './SanityFormBuilderContext'
 import * as gradientPatchAdapter from './utils/gradientPatchAdapter'
+import {Diff} from '@sanity/diff'
 
 type PatchChannel = {
   subscribe: () => () => {}
@@ -16,6 +17,7 @@ type Props = {
   type: Type
   markers: Array<Marker>
   patchChannel: PatchChannel
+  diff: Diff<unknown>
   onFocus: (arg0: Path) => void
   readOnly: boolean
   onChange: (patches: any[]) => void
@@ -60,6 +62,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
       onBlur,
       focusPath,
       filterField,
+      diff,
       presence
     } = this.props
     return (
@@ -70,6 +73,7 @@ export default class SanityFormBuilder extends React.Component<Props, {}> {
           level={0}
           value={value}
           onFocus={onFocus}
+          diff={diff}
           onBlur={onBlur}
           markers={markers}
           focusPath={focusPath}

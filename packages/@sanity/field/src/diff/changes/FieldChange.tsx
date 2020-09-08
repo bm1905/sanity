@@ -14,7 +14,7 @@ const FallbackDiff = () => <div>Missing diff</div>
 
 export function FieldChange({change}: {change: FieldChangeNode}) {
   const DiffComponent = change.diffComponent || FallbackDiff
-  const {documentId, schemaType} = useContext(DocumentChangeContext)
+  const {documentId, schemaType, FieldWrapper = React.Fragment} = useContext(DocumentChangeContext)
   const docOperations = useDocumentOperation(documentId, schemaType.name) as OperationsAPI
 
   const handleRevertChanges = useCallback(
@@ -25,22 +25,24 @@ export function FieldChange({change}: {change: FieldChangeNode}) {
   const rootClass = change.error ? styles.error : styles.root
 
   return (
-    <div className={rootClass}>
-      {change.renderHeader && <ChangeHeader titlePath={change.titlePath} />}
+    <FieldWrapper change={change}>
+      <div className={rootClass}>
+        {change.renderHeader && <ChangeHeader titlePath={change.titlePath} />}
 
-      <div className={styles.diffComponent}>
-        {change.error ? (
-          <ValueError error={change.error} />
-        ) : (
-          <DiffErrorBoundary>
-            <DiffComponent diff={change.diff} schemaType={change.schemaType} />
-          </DiffErrorBoundary>
-        )}
-      </div>
+        <div className={styles.diffComponent}>
+          {change.error ? (
+            <ValueError error={change.error} />
+          ) : (
+            <DiffErrorBoundary>
+              <DiffComponent diff={change.diff} schemaType={change.schemaType} />
+            </DiffErrorBoundary>
+          )}
+        </div>
 
-      <div className={styles.revertChangesButtonContainer}>
-        <RevertChangesButton onClick={handleRevertChanges} />
+        <div className={styles.revertChangesButtonContainer}>
+          <RevertChangesButton onClick={handleRevertChanges} />
+        </div>
       </div>
-    </div>
+    </FieldWrapper>
   )
 }
