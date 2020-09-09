@@ -23,19 +23,19 @@ export function ConnectorsOverlay(props: Props) {
   } = props
 
   const changesPanel = regions.find(region => region.id == 'changesPanel')
-  const fieldRegions = regions.filter(
-    region => region !== changesPanel && region.id.startsWith('field-')
+  const changedField = regions.find(
+    region => region !== changesPanel && region.id.startsWith('changed-field')
   )
   const changeRegions = regions.filter(
     region => region !== changesPanel && region.id.startsWith('change-')
   )
 
   // note: this assumes the changes panel header and the document panel always have the same height
-  const topEdge = changesPanel?.rect?.top - 8
+  const topEdge = changesPanel?.rect?.top
   return (
     <div ref={trackerRef} {...rest}>
       {children}
-      {changesPanel && (
+      {changesPanel && changedField && (
         <svg
           style={{
             pointerEvents: 'none',
@@ -50,8 +50,8 @@ export function ConnectorsOverlay(props: Props) {
           }}
         >
           <g>
-            {fieldRegions.map(fieldRegion => {
-              const changeId = fieldRegion.id.replace('field-', 'change-')
+            {[changedField].map(fieldRegion => {
+              const changeId = `change-${fieldRegion.data.path}`
               const changeRegion = changeRegions.find(r => r.id === changeId)
 
               const changeMarkerLeft = changeRegion?.rect?.left - 10

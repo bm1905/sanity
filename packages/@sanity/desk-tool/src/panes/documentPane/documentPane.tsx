@@ -265,12 +265,12 @@ export function DocumentPane(props: DocumentPaneProps) {
                 changesSinceSelectRef={changesSinceSelectRef}
                 documentId={documentId}
                 isTimelineOpen={isTimelineOpen}
-                onScrollTopChange={setChangePanelScrollTop}
                 loading={historyState === 'loading'}
                 onTimelineOpen={handleTimelineSince}
                 schemaType={schemaType}
                 since={historyController.sinceTime}
                 timelineMode={timelineMode}
+                onScrollTopChange={setChangePanelScrollTop}
               />
             </div>
           )}

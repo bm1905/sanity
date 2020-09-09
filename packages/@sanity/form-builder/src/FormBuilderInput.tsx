@@ -266,7 +266,7 @@ export class FormBuilderInput extends React.Component<Props> {
       <div data-focus-path={PathUtils.toString(path)}>
         <FormFieldPresenceContext.Provider value={childPresenceInfo}>
           <ChangeConnectorContext.Provider
-            value={{isChanged: childDiff?.isChanged || false, path: this.getValuePath()}}
+            value={{isChanged: Boolean(childDiff?.isChanged), hasFocus, path: this.getValuePath()}}
           >
             <InputComponent
               {...rest}
